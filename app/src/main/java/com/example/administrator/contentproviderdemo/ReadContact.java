@@ -16,8 +16,6 @@ import java.util.List;
 
 public class ReadContact
 {
-    private String number;
-    private String displayName;
     private Context context;
     private Contacts contacts;
     private List<Contacts> contactsList;
@@ -31,19 +29,27 @@ public class ReadContact
     {
         try
         {
+            Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
             //使用ContentResolver查找联系人数据
-            Cursor cursor = context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
+            Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
             //遍历查询结果，获取系统中所有的联系人
-            while (cursor.moveToNext())
+            if(cursor.moveToFirst())
             {
-                contacts = new Contacts();
-                //获取联系人姓名
-                displayName = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
-                contacts.setName(displayName);
-                //获取联系人手机号码
-                number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                contacts.setNumber(number);
-                contactsList.add(contacts);
+                String number;
+                String displayName;
+                int displayNameColumn = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME);
+                int numberColumn = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                while (cursor.moveToNext())
+                {
+                    contacts = new Contacts();
+                    //获取联系人姓名
+                    displayName = cursor.getString(displayNameColumn);
+                    //获取联系人手机号码
+                    number = cursor.getString(numberColumn);
+                    contacts.setName(displayName);
+                    contacts.setNumber(number);
+                    contactsList.add(contacts);
+                }
             }
             cursor.close();
         }
@@ -68,11 +74,14 @@ public class ReadContact
                 cursor.close();
                 return name;
             }
-            cursor.close();
-            return "";
+            else
+            {
+                return "";
+            }
         }
         catch(Exception e)
         {
+            e.printStackTrace();
             cursor.close();
             return "";
         }
@@ -113,6 +122,5 @@ public class ReadContact
         {
             return false;
         }
-
     }
 }

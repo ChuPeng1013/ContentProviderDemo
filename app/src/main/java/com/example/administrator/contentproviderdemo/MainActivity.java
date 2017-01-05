@@ -1,6 +1,7 @@
 package com.example.administrator.contentproviderdemo;
 
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,11 +9,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.Toast;
-
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.appindexing.Thing;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.util.List;
 
@@ -36,6 +32,9 @@ public class MainActivity extends AppCompatActivity
         insertContact = (Button) findViewById(R.id.insertContact);
         readSMS = (Button) findViewById(R.id.readSMS);
         insertSMS = (Button) findViewById(R.id.insertSMS);
+        //监听ContentProvider的数据变化
+        MyContentObserver myContentObserver = new MyContentObserver(new Handler(), MainActivity.this);
+        getContentResolver().registerContentObserver(Uri.parse("content://sms"), true, myContentObserver);
 
         readContact.setOnClickListener(new View.OnClickListener()
         {
@@ -43,7 +42,8 @@ public class MainActivity extends AppCompatActivity
             {
                 ReadContact rc = new ReadContact(MainActivity.this);
                 listContacts = rc.getContact();
-                for (int i = 0; i < listContacts.size(); i++) {
+                for (int i = 0; i < listContacts.size(); i++)
+                {
                     Log.d("123", listContacts.get(i).getName());
                     Log.d("123", listContacts.get(i).getNumber());
                     Log.d("123", "-------------------------------------");
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity
             {
                 ReadSMS rs = new ReadSMS(MainActivity.this);
                 //address, type, date, body
-                if (rs.insertSMS("95555", 1, String.valueOf(System.currentTimeMillis()), "尊敬的XXX，您的尾号为986的工行卡，收入人民币50,000,000元"))
+                if (rs.insertSMS("123456", 1, System.currentTimeMillis(), "尊敬的XXX，您的尾号为986的工行卡，收入人民币50,000,000元"))
                 {
                     Toast.makeText(MainActivity.this, "插入成功", Toast.LENGTH_SHORT).show();
                 }

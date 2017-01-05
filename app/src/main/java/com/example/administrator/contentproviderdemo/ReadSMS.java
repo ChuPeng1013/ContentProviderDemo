@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class ReadSMS
         SMSList = new ArrayList<SMSContent>();
 
     }
-    //读取收件箱信息
+    //获取收件箱的哪些信息
     public List<SMSContent> getSMS()
     {
         String[] projection = new String[]
@@ -37,6 +36,7 @@ public class ReadSMS
                 };
         try
         {
+
             Uri uri = Uri.parse("content://sms/");
             Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
             if (cursor.moveToFirst())
@@ -73,7 +73,13 @@ public class ReadSMS
     }
 
     //插入一条信息到收件箱中
-    public boolean insertSMS(String address, int type, String date, String body)
+    /*
+    address:发件人地址(电话号码)
+    type:信息类型(1是接收到的，2是已发出)
+    date:日期
+    body:/短消息内容
+     */
+    public boolean insertSMS(String address, int type, long date, String body)
     {
         try
         {
@@ -93,5 +99,4 @@ public class ReadSMS
             return false;
         }
     }
-
 }
